@@ -19,8 +19,8 @@ module.exports.routes = {
   *                                                                          *
   ***************************************************************************/
 
-  '/': { view: 'pages/homepage' },
-
+'GET /': 'DataController/welcome',
+'GET /workoutData': 'DataController/getWorkoutData'
 
   /***************************************************************************
   *                                                                          *

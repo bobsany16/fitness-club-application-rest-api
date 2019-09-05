@@ -46,7 +46,7 @@
 ################################################
 
 config/local.js
-
+fitness-club-api-49ec5576cd1d.json
 
 ################################################
 # Dependencies
@@ -86,7 +86,7 @@ config/local.js
 #     over at https://sailsjs.com/support
 #
 ################################################
-
+fitness-club-api-29d343b8a48a.json
 node_modules
 
 
@@ -129,4 +129,3 @@ lib-cov
 *.log
 *.out
 *.pid
-
