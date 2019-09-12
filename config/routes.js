@@ -20,7 +20,8 @@ module.exports.routes = {
   ***************************************************************************/
 
 'GET /': 'DataController/welcome',
-'GET /workoutData': 'DataController/getWorkoutData'
+'GET /workoutData': 'DataController/getWorkoutData',
+'GET /exerciseData': 'DataController/getExerciseData'
 
   /***************************************************************************
   *                                                                          *
