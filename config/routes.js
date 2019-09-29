@@ -25,7 +25,8 @@ module.exports.routes = {
 'GET /workoutExerciseData': 'DataController/getWorkoutExerciseData',
 'GET /workout/:workoutId/exercises':'DataController/getExercisesForWorkout',
 'GET /workoutNames': 'DataController/getWorkoutNames',
-'GET /exercise/:exerciseId/youtubeLink':'DataController/getYoutubeLinkForExercise'
+'GET /exercise/:exerciseId/youtubeLink':'DataController/getYoutubeLinkForExercise',
+'GET /workout/:workoutId/setData':'DataController/getDataForClickedWorkout',
 
   /***************************************************************************
   *                                                                          *

@@ -9,50 +9,97 @@ async function getExercisesForWorkout(workoutId) {
             if (workoutEx[0] === workoutId) {
                 return workoutEx[1];
             }
-        }))]
-        exerciseIds = exerciseIds.filter(exId => exId !== undefined)
+        }))].filter(exId => exId !== undefined)
         let exercises = await getExerciseData(jwtClient);
         let exerciseNames = exercises.map(exercise => {
             if (exerciseIds.includes(exercise[0])) {
                 return exercise[1];
             }
-        })
-        exerciseNames = exerciseNames.filter(exName => exName !== undefined)
+        }).filter(exName => exName !== undefined)
         return exerciseNames
     } catch (e) {
         console.log(e);
     }
 }
 
-async function getWorkoutNames() {
+async function getDataForSelectedWorkout(workoutId) {
     try {
         const jwtClient = await connect();
-        let workoutData = await getWorkoutData(jwtClient);
-        let workoutNames = workoutData.filter(workout => {
-            if (workout[1] !== undefined) {
-                return workout
+        let workoutExercises = await getWorkoutExerciseData(jwtClient);
+        let setToExerciseMap = {};
+        workoutExercises = workoutExercises.filter(workoutEx => {
+            return workoutEx[0] === workoutId
+        })
+        for(workoutEx of workoutExercises){
+            if(!Object.keys(setToExerciseMap).includes(workoutEx[3])){
+                setToExerciseMap[`${workoutEx[3]}`] = new Array();
+                setToExerciseMap[`${workoutEx[3]}`].push(workoutEx[1]);
+            } else{
+                setToExerciseMap[`${workoutEx[3]}`].push(workoutEx[1]);
             }
-        })
-        workoutNames = workoutNames.map(data => {
-            return data[1]
-        })
-        return workoutNames
+        }
+        return setToExerciseMap;
     } catch (e) {
         console.log(e);
     }
 }
 
-async function getYoutubeLinkForExercise(exerciseId){
-    try{
+
+async function getCurrentDate() {
+    let dateObject = new Date();
+    let currentMonth = dateObject.getMonth() + 1;
+    let day = dateObject.getDate();
+    let year = dateObject.getFullYear();
+    let month = (currentMonth >= 0 && currentMonth <= 9) ? '0' + currentMonth : currentMonth;
+    let currentDate = `${month}/${day}/${year}`
+    return currentDate;
+}
+
+async function getWorkoutNamesForWeek() {
+    try {
+        const jwtClient = await connect();
+        let workoutData = await getWorkoutData(jwtClient);
+        let listOfIndices = [];
+        let dateObject = new Date();
+        let currentDay = Number(dateObject.getDay());
+        let currentDate = await getCurrentDate();
+        let currentWorkout = workoutData.filter(workout => {
+            if (workout[2] === currentDate) {
+                return true
+            }
+        })
+        let currentWorkoutIndex = Number(currentWorkout[0][0]);
+        currentWorkoutIndex = currentWorkoutIndex - currentDay;
+        for (let i = 0; i < 7; i++) {
+            listOfIndices.push(currentWorkoutIndex);
+            currentWorkoutIndex++;
+        }
+        let workoutNames = workoutData.map(workout => {
+            if (listOfIndices.includes(Number(workout[0]))) {
+                return workout[1];
+            }
+        }).filter(workoutName => {
+            if (workoutName !== undefined) {
+                return workoutName
+            }
+        })
+        return workoutNames;
+    } catch (e) {
+        console.log(e);
+    }
+}
+
+async function getYoutubeLinkForExercise(exerciseId) {
+    try {
         const jwtClient = await connect();
         let exerciseData = await getExerciseData(jwtClient);
         let exDataObj = {};
         exDataObj = exerciseData.filter(
             exData => exData[0] === exerciseId
-          );
-        let youtubeURL = {youtubeUrl: exDataObj[0][3]};
+        );
+        let youtubeURL = { youtubeUrl: exDataObj[0][3] };
         return youtubeURL;
-    }catch(e){
+    } catch (e) {
         console.log(e)
     }
 }
@@ -90,7 +137,7 @@ async function getWorkoutExerciseRelatedData() {
 async function getWorkoutExerciseData(jwtClient) {
     try {
         let spreadsheetId = '1ywV6xgrtStloSIVnPzpNVlOk3ggoBwgBGgJ56sFfJS8';
-        let sheetName = 'Workout-Exercise!A2:C300'
+        let sheetName = 'Workout-Exercise!A2:D300'
         let sheets = google.sheets('v4');
         const res = await sheets.spreadsheets.values.get({
             auth: jwtClient,
@@ -143,6 +190,7 @@ module.exports = {
     getExerciseRelatedData,
     getWorkoutExerciseRelatedData,
     getExercisesForWorkout,
-    getWorkoutNames,
-    getYoutubeLinkForExercise
+    getWorkoutNamesForWeek,
+    getYoutubeLinkForExercise,
+    getDataForSelectedWorkout
 }

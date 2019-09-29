@@ -25,11 +25,15 @@ module.exports = {
         return res.send(data);
     },
     getWorkoutNames: async(req, res) => {
-        const data = await workoutData.getWorkoutNames();
+        const data = await workoutData.getWorkoutNamesForWeek();
         return res.send(data);
     },
     getYoutubeLinkForExercise: async(req, res) => {
         const data = await workoutData.getYoutubeLinkForExercise(req.param('exerciseId'));
+        return res.send(data);
+    },
+    getDataForClickedWorkout: async(req, res) => {
+        const data = await workoutData.getDataForSelectedWorkout(req.param('workoutId'));
         return res.send(data);
     }
 }
