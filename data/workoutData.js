@@ -30,13 +30,35 @@ async function getDataForSelectedWorkout(workoutId) {
         workoutExercises = workoutExercises.filter(workoutEx => {
             return workoutEx[0] === workoutId
         })
-        for(workoutEx of workoutExercises){
-            if(!Object.keys(setToExerciseMap).includes(workoutEx[3])){
+        for (workoutEx of workoutExercises) {
+            if (!Object.keys(setToExerciseMap).includes(workoutEx[3])) {
                 setToExerciseMap[`${workoutEx[3]}`] = new Array();
-                setToExerciseMap[`${workoutEx[3]}`].push(workoutEx[1]);
-            } else{
-                setToExerciseMap[`${workoutEx[3]}`].push(workoutEx[1]);
+                setToExerciseMap[`${workoutEx[3]}`].push({
+                    exerciseId: workoutEx[1],
+                    rep: workoutEx[2]
+                });
+            } else {
+                setToExerciseMap[`${workoutEx[3]}`].push({
+                    exerciseId: workoutEx[1],
+                    rep: workoutEx[2]
+                });
             }
+        }
+        let exerciseData = await getExerciseRelatedData(jwtClient);
+        for (var key in setToExerciseMap) {
+            setToExerciseMap[key] = setToExerciseMap[key].map(elementObj => {
+                let exName = ''
+                for (var key in exerciseData) {
+                    let exData = exerciseData[key];
+                    if (elementObj.exerciseId === exData[0]) {
+                        exName = exData[1]
+                    }
+                }
+                return ({
+                    exerciseName: exName,
+                    rep: elementObj.rep
+                })
+            })
         }
         return setToExerciseMap;
     } catch (e) {
