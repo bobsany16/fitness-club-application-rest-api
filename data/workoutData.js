@@ -1,6 +1,32 @@
 const { google } = require('googleapis');
 const connect = require('../connect')
 
+async function getBodyPartsAndAssociatedExercises() {
+    try {
+        const jwtClient = await connect();
+        let exercises = await getExerciseData(jwtClient);
+        let bodyPartsExercises = [];
+        let bodyParts = [...new Set(exercises.map(element => {
+            return element[2]
+        }))];
+        for (var i = 0; i < bodyParts.length; i++) {
+            let bpExercises = []
+            for (var j = 0; j < exercises.length; j++) {
+                if (exercises[j][2] === bodyParts[i]) {
+                    bpExercises.push(exercises[j][1]);
+                }
+            }
+            bodyPartsExercises.push({
+                bodyPartName: bodyParts[i],
+                exercises: bpExercises
+            })
+        }
+        return bodyPartsExercises
+    } catch (e) {
+        console.log(e)
+    }
+}
+
 async function getExercisesForWorkout(workoutId) {
     try {
         const jwtClient = await connect();
@@ -70,8 +96,9 @@ async function getDataForSelectedWorkout(workoutId) {
 async function getCurrentDate() {
     let dateObject = new Date();
     let currentMonth = dateObject.getMonth() + 1;
-    let day = dateObject.getDate();
+    let currentDay = dateObject.getDate();
     let year = dateObject.getFullYear();
+    let day = (currentDay >= 0 && currentDay <= 9) ? '0' + currentDay : currentDay;
     let month = (currentMonth >= 0 && currentMonth <= 9) ? '0' + currentMonth : currentMonth;
     let currentDate = `${month}/${day}/${year}`
     return currentDate;
@@ -214,5 +241,6 @@ module.exports = {
     getExercisesForWorkout,
     getWorkoutNamesForWeek,
     getYoutubeLinkForExercise,
-    getDataForSelectedWorkout
+    getDataForSelectedWorkout,
+    getBodyPartsAndAssociatedExercises
 }

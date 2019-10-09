@@ -35,5 +35,9 @@ module.exports = {
     getDataForClickedWorkout: async(req, res) => {
         const data = await workoutData.getDataForSelectedWorkout(req.param('workoutId'));
         return res.send(data);
+    },
+    getBodyPartsAndAssociatedExercises: async(req, res) => {
+        const data = await workoutData.getBodyPartsAndAssociatedExercises();
+        return res.send(data);
     }
 }
