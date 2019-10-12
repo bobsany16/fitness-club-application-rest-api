@@ -39,5 +39,9 @@ module.exports = {
     getBodyPartsAndAssociatedExercises: async(req, res) => {
         const data = await workoutData.getBodyPartsAndAssociatedExercises();
         return res.send(data);
+    },
+    getYoutubeLinkForExerciseByName: async(req, res) => {
+        const data = await workoutData.getYoutubeLinkForExerciseByName(req.param('exerciseName'))
+        return res.send(data);
     }
 }

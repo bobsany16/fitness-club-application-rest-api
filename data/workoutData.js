@@ -138,6 +138,21 @@ async function getWorkoutNamesForWeek() {
     }
 }
 
+async function getYoutubeLinkForExerciseByName(exerciseName){
+    try {
+        const jwtClient = await connect();
+        let exerciseData = await getExerciseData(jwtClient);
+        let exDataObj = {};
+        exDataObj = exerciseData.filter(
+            exData => exData[1] === exerciseName
+        );
+        let youtubeURL = { youtubeUrl: exDataObj[0][3] };
+        return youtubeURL;
+    } catch (e) {
+        console.log(e)
+    }
+}
+
 async function getYoutubeLinkForExercise(exerciseId) {
     try {
         const jwtClient = await connect();
@@ -242,5 +257,6 @@ module.exports = {
     getWorkoutNamesForWeek,
     getYoutubeLinkForExercise,
     getDataForSelectedWorkout,
-    getBodyPartsAndAssociatedExercises
+    getBodyPartsAndAssociatedExercises,
+    getYoutubeLinkForExerciseByName
 }
