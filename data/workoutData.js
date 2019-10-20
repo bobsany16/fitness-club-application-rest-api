@@ -1,6 +1,17 @@
 const { google } = require('googleapis');
 const connect = require('../connect')
 
+async function getCurrentDate() {
+    let dateObject = new Date();
+    let currentMonth = dateObject.getMonth() + 1;
+    let currentDay = dateObject.getDate();
+    let year = dateObject.getFullYear();
+    let day = (currentDay >= 0 && currentDay <= 9) ? '0' + currentDay : currentDay;
+    let month = (currentMonth >= 0 && currentMonth <= 9) ? '0' + currentMonth : currentMonth;
+    let currentDate = `${month}/${day}/${year}`
+    return currentDate;
+}
+
 async function getBodyPartsAndAssociatedExercises() {
     try {
         const jwtClient = await connect();
@@ -24,27 +35,6 @@ async function getBodyPartsAndAssociatedExercises() {
         return bodyPartsExercises
     } catch (e) {
         console.log(e)
-    }
-}
-
-async function getExercisesForWorkout(workoutId) {
-    try {
-        const jwtClient = await connect();
-        let workoutExercises = await getWorkoutExerciseData(jwtClient);
-        let exerciseIds = [...new Set(workoutExercises.map(workoutEx => {
-            if (workoutEx[0] === workoutId) {
-                return workoutEx[1];
-            }
-        }))].filter(exId => exId !== undefined)
-        let exercises = await getExerciseData(jwtClient);
-        let exerciseNames = exercises.map(exercise => {
-            if (exerciseIds.includes(exercise[0])) {
-                return exercise[1];
-            }
-        }).filter(exName => exName !== undefined)
-        return exerciseNames
-    } catch (e) {
-        console.log(e);
     }
 }
 
@@ -92,18 +82,6 @@ async function getDataForSelectedWorkout(workoutId) {
     }
 }
 
-
-async function getCurrentDate() {
-    let dateObject = new Date();
-    let currentMonth = dateObject.getMonth() + 1;
-    let currentDay = dateObject.getDate();
-    let year = dateObject.getFullYear();
-    let day = (currentDay >= 0 && currentDay <= 9) ? '0' + currentDay : currentDay;
-    let month = (currentMonth >= 0 && currentMonth <= 9) ? '0' + currentMonth : currentMonth;
-    let currentDate = `${month}/${day}/${year}`
-    return currentDate;
-}
-
 async function getWorkoutNamesForWeek() {
     try {
         const jwtClient = await connect();
@@ -138,7 +116,7 @@ async function getWorkoutNamesForWeek() {
     }
 }
 
-async function getYoutubeLinkForExerciseByName(exerciseName){
+async function getYoutubeLinkForExerciseByName(exerciseName) {
     try {
         const jwtClient = await connect();
         let exerciseData = await getExerciseData(jwtClient);
@@ -150,51 +128,6 @@ async function getYoutubeLinkForExerciseByName(exerciseName){
         return youtubeURL;
     } catch (e) {
         console.log(e)
-    }
-}
-
-async function getYoutubeLinkForExercise(exerciseId) {
-    try {
-        const jwtClient = await connect();
-        let exerciseData = await getExerciseData(jwtClient);
-        let exDataObj = {};
-        exDataObj = exerciseData.filter(
-            exData => exData[0] === exerciseId
-        );
-        let youtubeURL = { youtubeUrl: exDataObj[0][3] };
-        return youtubeURL;
-    } catch (e) {
-        console.log(e)
-    }
-}
-
-async function getWorkoutRelatedData() {
-    try {
-        const jwtClient = await connect();
-        let resData = await getWorkoutData(jwtClient);
-        return resData;
-    } catch (e) {
-        console.log(e);
-    }
-}
-
-async function getExerciseRelatedData() {
-    try {
-        const jwtClient = await connect();
-        let resData = await getExerciseData(jwtClient);
-        return resData;
-    } catch (e) {
-        console.log(e);
-    }
-}
-
-async function getWorkoutExerciseRelatedData() {
-    try {
-        const jwtClient = await connect();
-        let resData = await getWorkoutExerciseData(jwtClient);
-        return resData;
-    } catch (e) {
-        console.log(e);
     }
 }
 
@@ -212,6 +145,16 @@ async function getWorkoutExerciseData(jwtClient) {
     }
     catch (err) {
         console.log('The API returned an error: ' + err);
+    }
+}
+
+async function getExerciseRelatedData() {
+    try {
+        const jwtClient = await connect();
+        let resData = await getExerciseData(jwtClient);
+        return resData;
+    } catch (e) {
+        console.log(e);
     }
 }
 
@@ -250,12 +193,7 @@ async function getExerciseData(jwtClient) {
 }
 
 module.exports = {
-    getWorkoutRelatedData,
-    getExerciseRelatedData,
-    getWorkoutExerciseRelatedData,
-    getExercisesForWorkout,
     getWorkoutNamesForWeek,
-    getYoutubeLinkForExercise,
     getDataForSelectedWorkout,
     getBodyPartsAndAssociatedExercises,
     getYoutubeLinkForExerciseByName
